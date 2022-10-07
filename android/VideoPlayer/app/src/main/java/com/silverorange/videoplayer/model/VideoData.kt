@@ -8,10 +8,10 @@ data class VideoData (
     var id: String,
     @SerializedName("title")
     var title: String,
-    @SerializedName("hlsUrl")
-    var hlsUrl: String,
-    @SerializedName("fullUrl")
-    var fullUrl: String,
+    @SerializedName("hlsURL")
+    var hlsURL: String,
+    @SerializedName("fullURL")
+    var fullURL: String,
     @SerializedName("description")
     var description: String,
     @SerializedName("publishedAt")
