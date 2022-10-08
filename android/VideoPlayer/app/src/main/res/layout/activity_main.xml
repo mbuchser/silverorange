@@ -11,8 +11,9 @@
         android:layout_width="412dp"
         android:layout_height="240dp"
         android:layout_marginBottom="1dp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintBottom_toTopOf="@+id/tvTitle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,23 +27,51 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/videoView">
+        app:layout_constraintTop_toBottomOf="@+id/tvAuthor">
 
         <EditText
             android:id="@+id/etVideoDescr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:labelFor="@id/etVideoDescr"
             android:autofillHints="name"
+            android:ems="10"
             android:fontFamily="casual"
             android:gravity="start|top"
             android:inputType="textMultiLine"
+            android:labelFor="@id/etVideoDescr"
             android:minHeight="48dp"
             android:text="@string/videotext"
             android:typeface="serif"
             tools:text="@string/videotext" />
     </ScrollView>
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:fontFamily="casual"
+        android:text="@string/tvTitle"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tvAuthor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/videoView" />
+
+    <TextView
+        android:id="@+id/tvAuthor"
+        android:layout_width="0dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="2dp"
+        android:fontFamily="casual"
+        android:text="@string/tvAuthor"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.589"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabNext"

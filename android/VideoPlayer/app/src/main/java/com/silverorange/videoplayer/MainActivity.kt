@@ -11,6 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.net.toUri
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.silverorange.videoplayer.model.VideoData
+import io.noties.markwon.Markwon
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fabPrev : FloatingActionButton
     private lateinit var fabNext : FloatingActionButton
     private lateinit var textView : TextView
+    private lateinit var tvTitle : TextView
+    private lateinit var tvAuthor : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,14 +46,14 @@ class MainActivity : AppCompatActivity() {
         }
         videoView.setOnErrorListener(MediaPlayer.OnErrorListener {
                 mediaPlayer, i, i2 -> Log.e(TAG, "Mediaplayer error: " + i)
-            Toast.makeText(this, "Mediaplayer error" +i, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Mediaplayer error: " + + i, Toast.LENGTH_LONG).show()
             true
         })
         videoView.setOnPreparedListener { Log.i(TAG, "Videoview prepared") }
         fabPlay = findViewById(R.id.fabPlay)
         fabPlay.setOnClickListener {
             if (isPlaying){
-                videoView.stopPlayback()
+                videoView.pause()
                 isPlaying = false
                 showHideVideoControlButtons(true)
             } else {
@@ -60,16 +63,18 @@ class MainActivity : AppCompatActivity() {
         }
         fabNext = findViewById(R.id.fabNext)
         fabNext.setOnClickListener { view ->
-            setNextVideo()
+            setNextVideoAndHideActionButtons()
         }
         fabPrev = findViewById(R.id.fabPrevious)
         fabPrev.setOnClickListener {
-            setPreviousVideo()
+            setPreviousVideoAndHideActionButtons()
         }
         textView = findViewById(R.id.etVideoDescr)
+        tvTitle = findViewById(R.id.tvTitle)
+        tvAuthor = findViewById(R.id.tvAuthor)
     }
 
-    fun setFirstVideo(){
+    fun setFirstVideoAndHidePreviousButton(){
         showHideActionButton(fabPrev, false)
         if (!videoList.isNullOrEmpty()) {
             currentVideoPlaying = videoList[FIRST_VIDEO_POSITION_ZERO]
@@ -78,7 +83,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showHideActionButton(fab : FloatingActionButton, show: Boolean){
-        Log.i(TAG, "daminomau")
         if (show){
             fab.alpha = SHOWBUTTON_ALPHAONEDOTZERO
             fab.isEnabled = true
@@ -88,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setNextVideo(){
+    fun setNextVideoAndHideActionButtons(){
         if (!videoList.isNullOrEmpty() && currentPosition < videoList.size-1) {
             currentVideoPlaying = videoList[currentPosition + 1]
             currentPosition += 1
@@ -101,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         initVideoPrepareToPlay()
     }
 
-    fun setPreviousVideo(){
+    fun setPreviousVideoAndHideActionButtons(){
         if (!videoList.isNullOrEmpty() && currentPosition > 0) {
             currentVideoPlaying = videoList[currentPosition - 1]
             currentPosition -= 1
@@ -111,7 +115,6 @@ class MainActivity : AppCompatActivity() {
                 .show()
             currentVideoPlaying = videoList[FIRST_VIDEO_POSITION_ZERO]
             showHideActionButton(fabPrev, false)
-
         }
         initVideoPrepareToPlay()
     }
@@ -128,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     videoList = response.body()!!
                     totalVideos = videoList.size
-                    setFirstVideo()
+                    setFirstVideoAndHidePreviousButton()
                     sortVideosByDateDescending()
                     initVideoPrepareToPlay()
                 } else {
@@ -156,7 +159,9 @@ class MainActivity : AppCompatActivity() {
         if (!videoList.isEmpty()) {
             videoView.setVideoURI(currentVideoPlaying.fullURL.toUri())
             videoView.setVideoPath(currentVideoPlaying.fullURL)
-            textView.setText(currentVideoPlaying.description)
+            tvTitle.setText(currentVideoPlaying.title)
+            tvAuthor.setText(currentVideoPlaying.author.name)
+            setTextViewMarkdown(textView, currentVideoPlaying)
         } else {
             Toast.makeText(this@MainActivity, "No video to play right now, try again later", Toast.LENGTH_SHORT)
                 .show()
@@ -165,21 +170,26 @@ class MainActivity : AppCompatActivity() {
 
     fun playVideoSetVideoDescriptionAndHidePlayButtons(){
         showHideVideoControlButtons(false)
-        textView.setText(currentVideoPlaying.description)
+        setTextViewMarkdown(textView, currentVideoPlaying)
         videoView.start()
+    }
+
+    fun setTextViewMarkdown(tv : TextView, videodata: VideoData){
+        val markwon = Markwon.create(this)
+        markwon.setMarkdown(tv, videodata.description)
     }
 
     fun showHideVideoControlButtons(show: Boolean){
         if (show){
             fabPlay.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.play))
             fabPlay.alpha = SHOWBUTTON_ALPHAONEDOTZERO
-            fabPrev.show()
-            fabNext.show()
+            fabPrev.alpha = SHOWBUTTON_ALPHAONEDOTZERO
+            fabNext.alpha = SHOWBUTTON_ALPHAONEDOTZERO
         }else {
             fabPlay.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.pause))
             fabPlay.alpha = FADEBUTTON_ALPHAZERODOTTWO
-            fabPrev.hide()
-            fabNext.hide()
+            fabPrev.alpha = FADEBUTTON_ALPHAZERODOTTWO
+            fabNext.alpha = FADEBUTTON_ALPHAZERODOTTWO
         }
     }
 }
